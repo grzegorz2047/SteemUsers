@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 	<head>
 		<title>Activity</title>
 		<meta charset="utf-8">
@@ -8,17 +8,57 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-		<script src="//cdn.steemjs.com/lib/latest/steem.min.js"></script>
+		<script src="https://cdn.steemjs.com/lib/latest/steem.min.js"></script>
 	</head>
-	<body>
-		<div class="container">
-		  <h1>My First Bootstrap Page</h1>
-		  <p>This is some text.</p> 
-		</div>
 	<script>
-		steem.api.getAccounts(['ned', 'dan'], function(err, response){
-			console.log(err, response);
+		//localStorage.setItem("lastname", "Smith");
+		$(document).ready(function(){
+			$("#submit").click(function(){
+				let value = $("#usr").val();	
+				let usersArrayName = "userArrayJson";
+				let storedValue = localStorage.getItem(usersArrayName);
+				let userArray = [];
+				if(storedValue) {
+					userArray = JSON.parse(storedValue);
+				}
+				userArray.push(value);
+				localStorage.setItem(usersArrayName, JSON.stringify(userArray)); 
+			});
+			$("#refresh").click(function(){
+				let usersArrayName = "userArrayJson";
+				let storedValue = localStorage.getItem(usersArrayName);
+				let userArray = [];
+				if(storedValue) {
+					userArray = JSON.parse(storedValue);
+				} else {
+					alert("No added friends!");
+					return;
+				}
+				
+				steem.api.getAccounts(userArray, function(err, response){
+					console.log(err, response);
+					$("#text").html("");
+					for (i = 0; i < response.length; i++) { 
+						$("#text").html($("#text").html() + "Name: " + response[i].name + ", balance : " + response[i].balance + "<br/>");
+					}
+					
+				});
+			});
 		});
 	</script>
+	<body>
+		<div class="container">
+			<h1>Add your friend:</h1>
+			<div class="form-group">
+				<label for="usr">Friend name:</label>
+				<input type="text" class="form-control" id="usr">
+				<button type="button" class="btn btn-primary" id="submit">Add!</button>
+				<button type="button" class="btn btn-info" id="refresh">Refresh</button>
+			</div>
+			<div id= "text">
+				
+			</div>
+		</div>
+	
 	</body>
 </html>
