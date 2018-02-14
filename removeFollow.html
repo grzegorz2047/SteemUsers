@@ -11,7 +11,7 @@
 		<script src="https://cdn.steemjs.com/lib/latest/steem.min.js"></script>
 	</head>
 	<script>
-		$(document).ready(function(){
+ 		$(document).ready(function(){
 			function getUsersFromLocalStorage() {
 				let usersArrayName = "userArrayJson";
 				let storedValue = localStorage.getItem(usersArrayName);
@@ -19,11 +19,11 @@
 				if(storedValue) {
 					userArray = JSON.parse(storedValue);
 				}			
-				return userArray;
+				return userArray;          
 			}
 			
 			
-			function addUserClickListener() {
+			function removeUserClickListener() {
 				$("#submit").click(function(){
 					let value = $("#usr").val().trim();	
 					let usersArrayName = "userArrayJson";
@@ -32,26 +32,19 @@
 					if(storedValue) {
 						userArray = JSON.parse(storedValue);
 					}
-					if (jQuery.inArray(value, userArray) != -1) {
-						alert("User already exists on the list!");
+					let userIndexInArray = $.inArray(value, userArray);
+					if (userIndexInArray == -1) {
+						alert("User doesn't exists on the list!");
 						return;
 					}
-					steem.api.getAccounts([value], function(err, result) {
-						console.log(err, result);
-						if(result.length != 0) {
-							userArray.push(value);
-							localStorage.setItem(usersArrayName, JSON.stringify(userArray)); 
-							alert("You successfully added user " + value);
-						}else {
-							alert("User cannot be added because he doesn't exist!");
-						}
-					});
-
+					userArray.splice(userIndexInArray, 1);
+	
+					localStorage.setItem(usersArrayName, JSON.stringify(userArray)); 
+					alert("You successfully removed user " + value + " from a list!");
 				});
 			}
 			 
-			
-			addUserClickListener();	
+			removeUserClickListener();	
 		});
 	</script>
 	<body>
@@ -63,20 +56,20 @@
 			  <a class="nav-link" href="index.html">Home</a>
 			</li>
 			<li class="nav-item">
-			  <a class="nav-link active" href="addFollow.html">Add new user</a>
+			  <a class="nav-link" href="addFollow.html">Add new user</a>
 			</li>
 			<li class="nav-item">
-			  <a class="nav-link" href="removeFollow.html">Remove existing user</a>
+			  <a class="nav-link active" href="removeFollow.html">Remove existing user</a>
 			</li>
 		  </ul>
 		</nav>	
 
 		<div class="Container ml-5 mr-5">
-			<h1>Add follow to your list</h1>
+			<h1>Remove followed user from your list</h1>
 			<div class="form-group">
-				<label for="usr">Follow account name:</label>
+				<label for="usr">Username:</label>
 				<input type="text" class="form-control" id="usr">
-				<button type="button" class="btn btn-primary" id="submit">Add</button>
+				<button type="button" class="btn btn-danger" id="submit">Remove</button>
 			</div>
 		</div>	
 	</body>
