@@ -26,7 +26,7 @@
 			
 			function addUserClickListener() {
 				$("#submit").click(function(){
-					let value = $("#usr").val();	
+					let value = $("#usr").val()trim();	
 					let usersArrayName = "userArrayJson";
 					let storedValue = localStorage.getItem(usersArrayName);
 					let userArray = [];
