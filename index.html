@@ -10,7 +10,11 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 		<script src="https://cdn.steemjs.com/lib/latest/steem.min.js"></script>
-		<script src="jquery.timeago.js" type="text/javascript"></script>
+		<script src="js/timeago.min.js" type="text/javascript"></script>
+		<script src="js/moment.js" type="text/javascript"></script>
+		<script src="js/moment-timezone.js" type="text/javascript"></script>
+		<script src="js/moment-timezone-with-data.js"></script>
+
 	</head>
 	<script>
 		$(document).ready(function(){
@@ -31,10 +35,11 @@
 				}			
 			}
 			
-			function generateUserActivites(users) {				
-				steem.api.getAccounts(users, function(err, response){
+			function generateUserActivites(users) {		
+ 				steem.api.getAccounts(users, function(err, response){
 					console.log(err, response);
 					$("#text").html("");
+					
 					for (i = 0; i < response.length; i++) {  							
 						let userName = response[i].name;
 						steem.api.getAccountHistory(userName, Number.MAX_SAFE_INTEGER, 10, function(err, result) {
@@ -42,11 +47,18 @@
 							for(transactionIndex = result.length - 1; transactionIndex > 0 ; transactionIndex--) {
 								let activity = result[transactionIndex][1].op[0];
 								let formattedUsername = '<a target="_blank" href="https://steemit.com/@' + userName + '"><b>' + userName + '</b></a>';
-								if(activity == "vote") {
+								//var m = moment.tz("2013-11-18 11:55", "America/Toronto");
+
+								let getCleanTimeStamp = moment(result[transactionIndex][1].timestamp).valueOf();
+								let offset = -(new Date().getTimezoneOffset()/60) * 3600000;
+								console.log("c", offset);
+								//console.log("o", offset);
+								//let offsetted = getCleanTimeStamp + offset;
+								let timestamp = timeago().format(getCleanTimeStamp + offset);
+ 								if(activity == "vote") {
 									let voter = result[transactionIndex][1].op[1].voter;
 									let votedPostAuthor = result[transactionIndex][1].op[1].author;
-									let timestamp = jQuery.timeago(result[transactionIndex][1].timestamp);
-									if(voter == userName) {
+ 									if(voter == userName) {
 										$("#text").html($("#text").html() + formattedUsername + " voted on " + votedPostAuthor + "\'s post " + "<b>" + timestamp + "</b>" + "<br/>");
 										return;
 									}
@@ -55,7 +67,6 @@
 									let commentAuthor = result[transactionIndex][1].op[1].author;
 									let commentedPostAuthor = result[transactionIndex][1].op[1].parent_author;
 									let title = "\"" + result[transactionIndex][1].op[1].title + "\"";
-									let timestamp = jQuery.timeago(result[transactionIndex][1].timestamp);
 									if(commentAuthor == userName) {
 										if(commentedPostAuthor == "") {
 											$("#text").html($("#text").html() + formattedUsername + " posted " + title + " " + "<b>" + timestamp + "</b>" + " <br/>");										
