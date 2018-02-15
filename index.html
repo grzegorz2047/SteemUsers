@@ -42,7 +42,7 @@
 					
 					for (i = 0; i < response.length; i++) {  							
 						let userName = response[i].name;
-						steem.api.getAccountHistory(userName, Number.MAX_SAFE_INTEGER, 10, function(err, result) {
+						steem.api.getAccountHistory(userName, Number.MAX_SAFE_INTEGER, 100, function(err, result) {
 							console.log(err, result);
 							for(transactionIndex = result.length - 1; transactionIndex > 0 ; transactionIndex--) {
 								let activity = result[transactionIndex][1].op[0];
@@ -51,7 +51,7 @@
 
 								let getCleanTimeStamp = moment(result[transactionIndex][1].timestamp).valueOf();
 								let offset = -(new Date().getTimezoneOffset()/60) * 3600000;
-								console.log("c", offset);
+								//console.log("c", offset);
 								//console.log("o", offset);
 								//let offsetted = getCleanTimeStamp + offset;
 								let timestamp = timeago().format(getCleanTimeStamp + offset);
